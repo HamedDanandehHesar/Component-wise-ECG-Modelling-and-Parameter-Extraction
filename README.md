@@ -1,12 +1,14 @@
-# Component-wise-ECG-Modelling-and-Parameter-Extraction
+
+:::writing
+# Component-wise ECG Modelling and Parameter Extraction
 
 A MATLAB framework for **model‑based ECG morphology analysis and synthetic ECG generation** using **phase‑domain representation and Gaussian mixture modeling**.
 
 Unlike many ECG modeling approaches that approximate the entire waveform with a single model, this project **models each physiological ECG component separately**:
 
-• **P wave**  
-• **QRS complex**  
-• **T wave**
+- **P wave**  
+- **QRS complex**  
+- **T wave**
 
 Each component is independently modeled using a **Gaussian mixture representation optimized via Particle Swarm Optimization (PSO)**.  
 The framework then reconstructs **synthetic versions of each wave individually** as well as the **complete synthetic ECG waveform**.
@@ -21,9 +23,9 @@ Electrocardiogram (ECG) signals consist of repeating cardiac cycles whose morpho
 
 To address this, the ECG signal is transformed into the **cardiac phase domain**, where each beat is mapped into a normalized phase interval:
 
-- start of beat → \( -\pi \)  
+- start of beat → `-π`  
 - **R‑peak → 0**  
-- end of beat → \( \pi \)
+- end of beat → `π`
 
 This transformation aligns cardiac cycles regardless of their duration, allowing accurate estimation of the **mean ECG morphology**.
 
@@ -33,14 +35,14 @@ The mean ECG waveform is then decomposed into its physiological components (**P,
 
 # Key Features
 
-• ECG modeling in the **cardiac phase domain**  
-• **Automatic R‑peak detection** using the Pan–Tompkins algorithm  
-• Optional **nonlinear phase alignment using Dynamic Time Warping (DTW)**  
-• **Mean ECG morphology extraction** across heartbeats  
-• **Separate modeling of P wave, QRS complex, and T wave**  
-• **Gaussian mixture decomposition** of each ECG component  
-• Parameter estimation via **Particle Swarm Optimization (PSO)**  
-• Generation of **synthetic ECG components and full ECG waveform**
+- ECG modeling in the **cardiac phase domain**  
+- **Automatic R‑peak detection** using the Pan–Tompkins algorithm  
+- Optional **nonlinear phase alignment using Dynamic Time Warping (DTW)**  
+- **Mean ECG morphology extraction** across heartbeats  
+- **Separate modeling of P wave, QRS complex, and T wave**  
+- **Gaussian mixture decomposition** of each ECG component  
+- Parameter estimation via **Particle Swarm Optimization (PSO)**  
+- Generation of **synthetic ECG components and full ECG waveform**
 
 ---
 
@@ -48,12 +50,12 @@ The mean ECG waveform is then decomposed into its physiological components (**P,
 
 The processing pipeline of the framework is illustrated below.
 
-1. **ECG Signal Loading**
+## 1. ECG Signal Loading
 
 The ECG signal is loaded from a MATLAB `.mat` dataset:
 
 ```
-x  → ECG signal matrix  
+x  → ECG signal matrix
 fs → sampling frequency
 ```
 
@@ -65,7 +67,7 @@ ecg = x(1,:);
 
 ---
 
-2. **R‑Peak Detection**
+## 2. R‑Peak Detection
 
 R‑peaks are detected using the **Pan–Tompkins QRS detection algorithm**:
 
@@ -77,7 +79,7 @@ These R‑peaks define the boundaries of individual cardiac cycles.
 
 ---
 
-3. **Cardiac Phase Calculation**
+## 3. Cardiac Phase Calculation
 
 Each ECG sample is mapped to a **cardiac phase** between consecutive R‑peaks.
 
@@ -87,21 +89,21 @@ Each ECG sample is mapped to a **cardiac phase** between consecutive R‑peaks.
 
 The phase is wrapped to the interval:
 
-\[
-[-\pi , \pi]
-\]
+```
+[-π , π]
+```
 
 where
 
-\[
-\theta = 0
-\]
+```
+θ = 0
+```
 
 corresponds to the **R‑peak**.
 
 ---
 
-4. **Nonlinear Phase Alignment (Optional)**
+## 4. Nonlinear Phase Alignment (Optional)
 
 To improve alignment between heartbeats, **Dynamic Time Warping (DTW)** can be applied to obtain a nonlinear phase trajectory.
 
@@ -115,7 +117,7 @@ NonlinearPhase
 
 ---
 
-5. **Mean ECG Morphology Extraction**
+## 5. Mean ECG Morphology Extraction
 
 The ECG waveform is averaged in the phase domain using **phase binning**.
 
@@ -127,8 +129,8 @@ Number of phase bins = 200
 
 For each phase bin:
 
-• mean ECG amplitude is computed  
-• standard deviation is estimated
+- mean ECG amplitude is computed  
+- standard deviation is estimated
 
 Function used:
 
@@ -138,9 +140,9 @@ ecgsd_extractor_ver1
 
 Outputs include:
 
-• `ECGmean` – mean ECG using linear phase  
-• `ECGmean_nonlinear_phase` – mean ECG using nonlinear phase  
-• `ECGsd` – phase‑dependent variability
+- `ECGmean` – mean ECG using linear phase  
+- `ECGmean_nonlinear_phase` – mean ECG using nonlinear phase  
+- `ECGsd` – phase‑dependent variability
 
 ---
 
@@ -152,9 +154,9 @@ The mean ECG waveform is divided into physiologically meaningful regions in the 
 
 Phase interval:
 
-\[
--\frac{\pi}{2} < \theta < -\frac{\pi}{6}
-\]
+```
+-π/2 < θ < -π/6
+```
 
 The P wave is modeled using a **Gaussian mixture**:
 
@@ -174,9 +176,9 @@ Synthetic_P
 
 Phase interval:
 
-\[
--\frac{\pi}{6} < \theta < \frac{\pi}{6}
-\]
+```
+-π/6 < θ < π/6
+```
 
 The QRS complex is modeled using:
 
@@ -196,9 +198,9 @@ Synthetic_QRS
 
 Phase interval:
 
-\[
-\frac{\pi}{6} < \theta < \frac{2\pi}{3}
-\]
+```
+π/6 < θ < 2π/3
+```
 
 The T wave is modeled using:
 
@@ -216,17 +218,17 @@ Synthetic_T
 
 # Gaussian Kernel Model
 
-Each ECG component is approximated using a set of Gaussian kernels:
+Each ECG component is approximated using Gaussian kernels of the form:
 
-\[
-G(\theta) = a_i \, \exp \left(-\frac{(\theta-\theta_i)^2}{2b_i^2}\right)
-\]
+```
+G(θ) = a_i * exp( - (θ − θ_i)^2 / (2 b_i^2) )
+```
 
 where:
 
-• \(a_i\) → amplitude  
-• \(b_i\) → width  
-• \( \theta_i \) → phase location of the kernel
+- `a_i` → amplitude  
+- `b_i` → width  
+- `θ_i` → phase location of the kernel
 
 The sum of these kernels reconstructs the morphology of each ECG component.
 
@@ -283,13 +285,13 @@ This provides a **fully parametric representation of the ECG waveform**.
 
 The script generates several diagnostic figures:
 
-• ECG signal with detected **R‑peaks**  
-• Mean ECG morphology (linear vs nonlinear phase)  
-• Gaussian reconstruction of **P wave**  
-• Gaussian reconstruction of **QRS complex**  
-• Gaussian reconstruction of **T wave**  
-• Synthetic ECG mean vs original ECG mean  
-• Synthetic ECG vs original ECG signal
+- ECG signal with detected **R‑peaks**  
+- Mean ECG morphology (linear vs nonlinear phase)  
+- Gaussian reconstruction of **P wave**  
+- Gaussian reconstruction of **QRS complex**  
+- Gaussian reconstruction of **T wave**  
+- Synthetic ECG mean vs original ECG mean  
+- Synthetic ECG vs original ECG signal
 
 ---
 
@@ -297,9 +299,9 @@ The script generates several diagnostic figures:
 
 MATLAB toolboxes:
 
-• Signal Processing Toolbox  
-• Global Optimization Toolbox  
-• Statistics Toolbox
+- Signal Processing Toolbox  
+- Global Optimization Toolbox  
+- Statistics Toolbox
 
 Required helper functions:
 
@@ -323,15 +325,14 @@ for nonlinear phase alignment.
 
 This framework can be used for:
 
-• ECG morphology analysis  
-• synthetic ECG signal generation  
-• ECG compression and parametric modeling  
-• cardiac waveform simulation  
-• biomedical signal processing research  
-• model‑based ECG denoising
+- ECG morphology analysis  
+- synthetic ECG signal generation  
+- ECG compression and parametric modeling  
+- cardiac waveform simulation  
+- biomedical signal processing research  
+- model‑based ECG denoising
 
 ---
-
 
 The result is a **compact and interpretable parametric model of the ECG waveform** suitable for analysis, simulation, and research applications.
 :::
