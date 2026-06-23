@@ -1,3 +1,6 @@
+<img width="560" height="420" alt="untitled2" src="https://github.com/user-attachments/assets/240d7486-2137-4ecc-9c35-7bee311cd9a1" />
+<img width="560" height="420" alt="untitled1" src="https://github.com/user-attachments/assets/4da22b25-c0c7-4008-9bea-ce0df0ed3c0a" />
+<img width="1366" height="643" alt="untitled" src="https://github.com/user-attachments/assets/85701383-8b65-4c13-b7b9-7ff3eeea0d13" />
 
 :::writing
 # Component-wise ECG Modelling and Parameter Extraction
